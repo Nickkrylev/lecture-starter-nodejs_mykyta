@@ -6,12 +6,21 @@ const router = Router();
 
 router.post(
   "/login",
-  (req, res, next) => {
+  async (req, res, next) => {
     try {
-      // TODO: Implement login action (get the user if it exist with entered credentials)
-      res.data = data;
+      const { email, password } = req.body;
+      if (!email || !password) {
+        return res.error("Missing email or password");
+      }
+
+      const user = await authService.login(email, password);
+      if (!user) {
+        return res.error("Invalid credentials", 404);
+      }
+
+      res.success(user);
     } catch (err) {
-      res.err = err;
+      res.error("Login failed");
     } finally {
       next();
     }
